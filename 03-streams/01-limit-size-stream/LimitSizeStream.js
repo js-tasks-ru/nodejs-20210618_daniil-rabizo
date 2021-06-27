@@ -11,7 +11,7 @@ class LimitSizeStream extends stream.Transform {
   _transform(chunk, encoding, done) {
     const length = Buffer.from(chunk, encoding).length;
     if (this.currentLength + length > this.limit) {
-      return this.emit('error', new LimitExceededError());
+      return done(new LimitExceededError());
     }
     this.currentLength += length;
     done(null, chunk);

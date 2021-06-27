@@ -14,9 +14,9 @@ class LineSplitStream extends stream.Transform {
     } else {
       const splittedChunk = chunk.toString().split(os.EOL);
       this.chunkToSend += splittedChunk.shift();
-      this.emit('data', this.chunkToSend);
+      this.push(this.chunkToSend);
       for (let i = 0; i < splittedChunk.length - 1; i++) {
-        this.emit('data', splittedChunk[i]);
+        this.push(splittedChunk[i]);
       }
       this.chunkToSend = splittedChunk.pop();
       done(null);
@@ -25,7 +25,7 @@ class LineSplitStream extends stream.Transform {
 
   _flush(done) {
     if (!!this.chunkToSend) {
-      this.emit('data', this.chunkToSend);
+      this.push(this.chunkToSend);
     }
     this.chunkToSend = undefined;
     done();
