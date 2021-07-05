@@ -25,21 +25,27 @@ server.on('request', (req, res) => {
 
       const limitSizeStream = new LimitSizeStream({limit: 1000 * 1000});
       const fileWriteStream = fs.createWriteStream(filepath);
-      pipeline(req, limitSizeStream, fileWriteStream,
-          (err) => {
-            if (!err) {
-              res.statusCode = 201;
-              return res.end();
-            } else {
-              fs.rmSync(filepath);
-              if (err instanceof LimitExceededError) {
-                res.statusCode = 413;
-              } else {
-                res.statusCode = 500;
-              }
-              return res.end();
-            }
-          });
+      req.on('error', () => {
+        fs.rmSync(filepath);
+        res.statusCode = 500;
+        res.end();
+      }).pipe(limitSizeStream).on('error', (err) => {
+        fs.rmSync(filepath);
+        if (err instanceof LimitExceededError) {
+          res.statusCode = 413;
+        } else {
+          res.statusCode = 500;
+        }
+        res.end();
+      }).pipe(fileWriteStream).on('error', () => {
+        fs.rmSync(filepath);
+        res.statusCode = 500;
+        res.end();
+      }).on('finish', () => {
+        res.statusCode = 201;
+        return res.end();
+      });
+
       break;
 
     default:
