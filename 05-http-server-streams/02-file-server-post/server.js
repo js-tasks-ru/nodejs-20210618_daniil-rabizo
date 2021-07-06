@@ -12,6 +12,11 @@ server.on('request', (req, res) => {
 
   const filepath = path.join(__dirname, 'files', pathname);
 
+  const handleInternalServerError = (res) => {
+    res.statusCode = 500;
+    res.end('internal server error');
+  };
+
   switch (req.method) {
     case 'POST':
       if (pathname.includes('/')) {
@@ -27,23 +32,21 @@ server.on('request', (req, res) => {
       const fileWriteStream = fs.createWriteStream(filepath);
       req.on('error', () => {
         fs.rmSync(filepath);
-        res.statusCode = 500;
-        res.end();
+        handleInternalServerError(res);
       }).pipe(limitSizeStream).on('error', (err) => {
-        fs.rmSync(filepath);
         if (err instanceof LimitExceededError) {
           res.statusCode = 413;
+          res.end('file is too big');
         } else {
-          res.statusCode = 500;
+          handleInternalServerError(res);
         }
-        res.end();
+        fs.rmSync(filepath);
       }).pipe(fileWriteStream).on('error', () => {
         fs.rmSync(filepath);
-        res.statusCode = 500;
-        res.end();
+        handleInternalServerError(res);
       }).on('finish', () => {
         res.statusCode = 201;
-        return res.end();
+        res.end('ok');
       });
 
       break;
