@@ -5,28 +5,27 @@ app.use(require('koa-static')(path.join(__dirname, 'public')));
 app.use(require('koa-bodyparser')());
 const Router = require('koa-router');
 const router = new Router();
-const clientConnections = {};
+let clientConnections = [];
 
 router.get('/subscribe', async (ctx, next) => {
-  const promiseToResolveOnMessage = new Promise((resolve) => {
-    ctx.state.resolveOnMessage = resolve;
+  const promiseToResolveOnMessage = new Promise((message) => {
+    clientConnections.push(message);
   });
-  const subscriptionId = Math.random().toString();
-  clientConnections[subscriptionId] = ctx;
   const message = await promiseToResolveOnMessage;
   ctx.body = message;
-  delete clientConnections[subscriptionId];
 });
 
 router.post('/publish', async (ctx, next) => {
   const body = await ctx.request.body;
   if (!body.message) {
-    ctx.status = 200;
-    return next();
+    ctx.status = 400;
+    ctx.body = 'message is required';
+    return;
   }
-  Object.values(clientConnections).forEach((clientContext) => {
-    clientContext.state.resolveOnMessage(body.message);
+  clientConnections.forEach((waitingClient) => {
+    waitingClient(body.message);
   });
+  clientConnections = [];
   ctx.status = 200;
 });
 
