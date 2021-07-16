@@ -55,29 +55,29 @@ describe('mongodb-mongoose/rest-api', () => {
 
         expect(
             response.data,
-            'ответ сервера содержит массив .categories'
+            'ответ сервера содержит массив .categories',
         ).to.have.property('categories').that.is.an('array');
 
         const categories = response.data.categories;
 
         expect(
             categories[0],
-            'категория содержит поля title, id и subcategories'
+            'категория содержит поля title, id и subcategories',
         ).to.have.keys(['title', 'id', 'subcategories']);
 
         expect(
             categories[0],
-            'категория содержит массив subcategories'
+            'категория содержит массив subcategories',
         ).to.have.property('subcategories').that.is.an('array');
 
         expect(
             categories[0].id,
-            'идентификатор категории содержит тоже значение, что и в базе'
+            'идентификатор категории содержит тоже значение, что и в базе',
         ).to.equal(category.id);
 
         expect(
             categories[0].subcategories[0].id,
-            'идентификатор подкатегории содержит тоже значение, что и в базе'
+            'идентификатор подкатегории содержит тоже значение, что и в базе',
         ).to.equal(category.subcategories[0].id);
       });
     });
@@ -85,11 +85,11 @@ describe('mongodb-mongoose/rest-api', () => {
     describe('товары', () => {
       describe('получение списка товаров по подкатегории', () => {
         it('если товары есть в базе - должен вернуться массив с товарами', async () => {
-          const response = await client.get('http://localhost:3000/api/products');
+          const response = await client.get('http://localhost:3000/api/products?subcategory=' + category.subcategories[0]._id);
 
           expect(
               response.data,
-              'ответ сервера содержит массив .products'
+              'ответ сервера содержит массив .products',
           ).to.have.property('products').that.is.an('array');
 
           expect(
@@ -109,12 +109,12 @@ describe('mongodb-mongoose/rest-api', () => {
 
           expect(
               response.data,
-              'ответ сервера содержит массив .products'
+              'ответ сервера содержит массив .products',
           ).to.have.property('products').that.is.an('array');
 
           expect(
               response.data.products,
-              'массив пустой'
+              'массив пустой',
           ).to.be.empty;
         });
 
@@ -125,21 +125,21 @@ describe('mongodb-mongoose/rest-api', () => {
 
           expect(
               response.data,
-              'ответ сервера содержит массив .products'
+              'ответ сервера содержит массив .products',
           ).to.have.property('products').that.is.an('array');
 
           const products = response.data.products;
 
           expect(
               products[0],
-              'товар содержит поля title, id, category, subcategory, price, description и images'
+              'товар содержит поля title, id, category, subcategory, price, description и images',
           ).to.have.keys([
             'title', 'id', 'category', 'subcategory', 'price', 'description', 'images',
           ]);
 
           expect(
               products[0].id,
-              'идентификатор товара содержит тоже значение, что и в базе'
+              'идентификатор товара содержит тоже значение, что и в базе',
           ).to.equal(product.id);
         });
       });
@@ -162,7 +162,7 @@ describe('mongodb-mongoose/rest-api', () => {
 
           expect(
               response.data,
-              'ответ сервера содержит ключ .product'
+              'ответ сервера содержит ключ .product',
           ).to.have.property('product');
 
           expect(response.data.product.id).to.equal(product.id);
