@@ -1,5 +1,4 @@
 const product = require('../models/Product');
-const mongoose = require('mongoose');
 
 const _mapDbProductToProductDTO = (dbProduct) => {
   return {
