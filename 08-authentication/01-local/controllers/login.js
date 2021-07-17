@@ -1,4 +1,4 @@
-const { v4: uuid } = require('uuid');
+const {v4: uuid} = require('uuid');
 const passport = require('../libs/passport');
 
 module.exports.login = async function login(ctx, next) {
