@@ -43,8 +43,8 @@ describe('websockets/chat', () => {
     it('неаутентифицированный клиент не может подключиться по вебсокету', (done) => {
       client = io('http://localhost:3000');
 
-      client.on('error', (err) => {
-        expect(err).to.equal('anonymous sessions are not allowed');
+      client.on('connect_error', (err) => {
+        expect(err.message).to.equal('anonymous sessions are not allowed');
         done();
       });
     });

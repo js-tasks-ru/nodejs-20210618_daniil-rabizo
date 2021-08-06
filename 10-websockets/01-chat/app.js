@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const Koa = require('koa');
-const { v4: uuid } = require('uuid');
+const {v4: uuid} = require('uuid');
 const Router = require('koa-router');
 const handleMongooseValidationError = require('./libs/validationErrors');
 const mustBeAuthenticated = require('./libs/mustBeAuthenticated');
@@ -87,7 +87,7 @@ router.post('/confirm', confirm);
 router.get('/orders', mustBeAuthenticated, getOrdersList);
 router.post('/orders', mustBeAuthenticated, handleMongooseValidationError, checkout);
 
-router.get('/messages', messageList);
+router.get('/messages', mustBeAuthenticated, messageList);
 
 app.use(router.routes());
 
