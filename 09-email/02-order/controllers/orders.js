@@ -26,7 +26,8 @@ module.exports.checkout = async function checkout(ctx, next) {
     ctx.status = 200;
     ctx.body = {order: order._id};
   } catch (e) {
-    console.error(e);
+    ctx.status = 400;
+    ctx.body = e.message ? e.message : e;
   }
 };
 
