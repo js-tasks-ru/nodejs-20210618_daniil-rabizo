@@ -1,5 +1,5 @@
 const Koa = require('koa');
-const { v4: uuid } = require('uuid');
+const {v4: uuid} = require('uuid');
 const Router = require('koa-router');
 const handleMongooseValidationError = require('./libs/validationErrors');
 const mustBeAuthenticated = require('./libs/mustBeAuthenticated');
@@ -7,7 +7,7 @@ const {productsBySubcategory, productList, productById} = require('./controllers
 const {categoryList} = require('./controllers/categories');
 const {login} = require('./controllers/login');
 const {oauth, oauthCallback} = require('./controllers/oauth');
-const {me} = require('./controllers/me');
+const {getSession} = require('./controllers/authenticate');
 const {register, confirm} = require('./controllers/registration');
 const {checkout, getOrdersList} = require('./controllers/orders');
 const Session = require('./models/Session');
@@ -71,13 +71,13 @@ router.post('/login', login);
 router.get('/oauth/:provider', oauth);
 router.post('/oauth_callback', handleMongooseValidationError, oauthCallback);
 
-router.get('/me', mustBeAuthenticated, me);
+router.get('/me', mustBeAuthenticated, getSession);
 
 router.post('/register', handleMongooseValidationError, register);
 router.post('/confirm', confirm);
 
-router.get('/orders', getOrdersList);
-router.post('/orders', checkout);
+router.get('/orders', getSession, getOrdersList);
+router.post('/orders', getSession, handleMongooseValidationError, checkout);
 
 app.use(router.routes());
 
